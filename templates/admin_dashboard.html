@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<h3>Admin Dashboard</h3><p>Users: {{ total_users }} • Products: {{ total_products }} • Orders: {{ total_orders }}</p><p><a class="btn btn-secondary" href="{{ url_for('reports') }}">View Reports</a></p>{% endblock %}

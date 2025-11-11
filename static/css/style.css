@@ -1,0 +1,6 @@
+@media (max-width: 768px) {
+  .d-flex form input,
+  .d-flex form button {
+    width: 100% !important;
+  }
+}

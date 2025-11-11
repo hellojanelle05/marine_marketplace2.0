@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+  <!-- 🔍 Search & Filter Bar (aligned left) -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <form class="d-flex" method="GET" action="{{ url_for('marketplace') }}">
+        <input 
+          class="form-control me-2" 
+          type="text" 
+          name="q" 
+          placeholder="Search products..." 
+          value="{{ q }}"
+        >
+        <input 
+          class="form-control me-2" 
+          type="number" 
+          name="min" 
+          placeholder="Min price" 
+          value="{{ minp }}" 
+          min="0"
+        >
+        <input 
+          class="form-control me-2" 
+          type="number" 
+          name="max" 
+          placeholder="Max price" 
+          value="{{ maxp }}" 
+          min="0"
+        >
+        <button class="btn btn-outline-primary" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 🐟 Product Cards -->
+  <div class="row">
+    {% if products %}
+      {% for p in products %}
+      <div class="col-md-4">
+        <div class="card mb-3 shadow-sm">
+          <img 
+            src="{{ url_for('static', filename=p.image_path) }}" 
+            class="card-img-top" 
+            alt="{{ p.name }}" 
+            style="height: 180px; object-fit: cover;"
+          >
+          <div class="card-body">
+            <h5 class="card-title">{{ p.name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+              ₱{{ '{:.2f}'.format(p.price) }} • {{ p.quantity }} kg
+            </h6>
+            <p class="card-text">{{ p.description }}</p>
+            <p class="card-text">
+              <small class="text-muted">
+                Sold by: {{ p.vendor.fullname or p.vendor.username }}
+              </small>
+            </p>
+            <a 
+              href="{{ url_for('product_detail', pid=p.id) }}" 
+              class="btn btn-primary w-100"
+            >
+              View
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-center mt-4">
+        <h5 class="text-muted">No products found matching your search or filters.</h5>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Sales Reports</h3>
+
+<p>
+  Total Revenue: <span id="total-rev">...</span> • 
+  Total Orders: <span id="total-orders">...</span>
+</p>
+
+<canvas id="chart" style="max-width:800px;"></canvas>
+
+<h5>Top Products</h5>
+<ul id="top"></ul>
+
+<!-- ✅ Fixed the export CSV button link -->
+<p>
+  <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('export_csv') }}">Export CSV</a>
+</p>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+async function load() {
+  const r = await fetch('{{ url_for("reports_data") }}');
+  const d = await r.json();
+
+  document.getElementById('total-rev').innerText = d.total_revenue;
+  document.getElementById('total-orders').innerText = d.total_orders;
+
+  const ctx = document.getElementById('chart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: d.labels,
+      datasets: [{
+        label: 'Revenue',
+        data: d.values,
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {}
+  });
+
+  document.getElementById('top').innerHTML = d.top_products
+    .map(t => `<li>${t.name} — ${t.qty}</li>`)
+    .join('');
+}
+
+load();
+</script>
+{% endblock %}
