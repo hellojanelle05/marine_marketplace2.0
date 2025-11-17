@@ -1,0 +1,17 @@
+{% extends 'base.html' %}{% block content %}
+<h3>Payment — {{ product['name'] }}</h3>
+<form method="POST" action="{{ url_for('payment', pid=product['id']) }}">
+  <div class="mb-3">
+    <label class="form-label">Quantity</label>
+    <input type="number" name="quantity" value="1" min="1" max="{{ product['quantity'] }}" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Payment Method</label>
+    <select name="method" class="form-select">
+      <option>COD</option>
+      <option>GCash</option>
+    </select>
+  </div>
+  <button class="btn btn-success">Pay Now (mock)</button>
+</form>
+{% endblock %}

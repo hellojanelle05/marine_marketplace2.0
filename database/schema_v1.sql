@@ -1,8 +1,8 @@
 BEGIN TRANSACTION;
 
--- ==============================
--- USERS TABLE
--- ==============================
+-- ============================================
+-- USERS TABLE (unchanged)
+-- ============================================
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
@@ -12,9 +12,9 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
--- ==============================
--- PRODUCTS TABLE
--- ==============================
+-- ============================================
+-- PRODUCTS TABLE (unchanged)
+-- ============================================
 CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -27,9 +27,37 @@ CREATE TABLE IF NOT EXISTS products (
     FOREIGN KEY (vendor_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- ==============================
--- ORDERS TABLE
--- ==============================
+-- ============================================
+-- CART TABLE (NEW)
+-- One active cart per buyer until checkout.
+-- ============================================
+CREATE TABLE IF NOT EXISTS cart (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    buyer_id INTEGER NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- ============================================
+-- CART ITEMS TABLE (NEW)
+-- Multiple items per cart.
+-- ============================================
+CREATE TABLE IF NOT EXISTS cart_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cart_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL CHECK(quantity > 0),
+    price_each REAL NOT NULL,
+    subtotal REAL NOT NULL,
+    added_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (cart_id) REFERENCES cart(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- ============================================
+-- ORDERS TABLE (same as before, good design)
+-- ============================================
 CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     buyer_id INTEGER NOT NULL,
@@ -38,9 +66,9 @@ CREATE TABLE IF NOT EXISTS orders (
     FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- ==============================
--- ORDER ITEMS TABLE
--- ==============================
+-- ============================================
+-- ORDER ITEMS TABLE (supports multi-item orders)
+-- ============================================
 CREATE TABLE IF NOT EXISTS order_items (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     order_id INTEGER NOT NULL,
@@ -52,9 +80,9 @@ CREATE TABLE IF NOT EXISTS order_items (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
--- ==============================
--- PAYMENTS TABLE
--- ==============================
+-- ============================================
+-- PAYMENTS TABLE (supports multi-item orders)
+-- ============================================
 CREATE TABLE IF NOT EXISTS payments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     order_id INTEGER NOT NULL,
@@ -67,9 +95,9 @@ CREATE TABLE IF NOT EXISTS payments (
 
 COMMIT;
 
--- ==============================
--- SAMPLE DATA
--- ==============================
+-- ============================================
+-- SAMPLE DATA (same as before)
+-- ============================================
 INSERT INTO users (username, password, fullname, role)
 VALUES 
 ('admin@marine.com', 'admin123', 'Admin Marine', 'admin'),
@@ -84,6 +112,7 @@ VALUES
 ('Shrimp', 350.0, 5, 'Fresh shrimp packs', 'uploads/shrimp.jpg', 2),
 ('Crab', 420.0, 2, 'Fresh crab per kg', 'uploads/crab.jpg', 2);
 
+-- Sample orders (kept)
 INSERT INTO orders (buyer_id, status)
 VALUES (3, 'Pending'), (3, 'Delivered');
 

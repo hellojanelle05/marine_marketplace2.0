@@ -1,1 +1,62 @@
-{% extends 'base.html' %}{% block content %}<h3>Vendor Dashboard</h3><p>Welcome, {{ user.fullname or user.username }}</p><a class="btn btn-primary" href="{{ url_for('add_product') }}">Add Product</a><hr><h5>Your Products</h5>{% if products %}<ul class="list-group">{% for p in products %}<li class="list-group-item">{{ p.name }} - ₱{{ '{:.2f}'.format(p.price) }}</li>{% endfor %}</ul>{% else %}<p>No products yet.</p>{% endif %}<hr><h5>Orders for your products</h5>{% if orders %}<ul class="list-group">{% for o in orders %}<li class="list-group-item">Order {{ o.id }} - {{ o.product_name }} ({{ o.quantity }}) - {{ o.status }}</li>{% endfor %}</ul>{% else %}<p>No orders yet.</p>{% endif %}{% endblock %}
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Vendor Dashboard</h3>
+
+<p>Welcome, {{ user.fullname or user.username }}</p>
+
+<a class="btn btn-primary mb-3" href="{{ url_for('add_product') }}">Add Product</a>
+
+<hr>
+
+<h5>Your Products</h5>
+{% if products %}
+<ul class="list-group mb-4">
+    {% for p in products %}
+    <li class="list-group-item">
+        {{ p.name }} - ₱{{ '{:.2f}'.format(p.price) }}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No products yet.</p>
+{% endif %}
+
+<hr>
+
+<h5>Orders for your products</h5>
+
+{% if orders %}
+<ul class="list-group">
+    {% for o in orders %}
+    <li class="list-group-item">
+
+        <strong>Order {{ o.id }}</strong>  
+        — {{ o.product_name }} ({{ o.quantity }})  
+        — <b>{{ o.status }}</b>
+
+        <!-- UPDATE STATUS FORM -->
+        <form method="POST"
+              action="{{ url_for('update_order', oid=o.id) }}"
+              class="mt-2 d-flex align-items-center">
+
+            <select name="status" class="form-select form-select-sm me-2" style="max-width: 200px;">
+                <option {% if o.status=='Pending' %}selected{% endif %}>Pending</option>
+                <option {% if o.status=='Processing' %}selected{% endif %}>Processing</option>
+                <option {% if o.status=='Shipped' %}selected{% endif %}>Shipped</option>
+                <option {% if o.status=='Delivered' %}selected{% endif %}>Delivered</option>
+                <option {% if o.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+
+            <button class="btn btn-sm btn-primary">Update</button>
+
+        </form>
+
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No orders yet.</p>
+{% endif %}
+
+{% endblock %}

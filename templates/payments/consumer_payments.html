@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>My Payments</h2>
+
+    {% if payments|length == 0 %}
+        <p>You have no payment records yet.</p>
+    {% else %}
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Total Amount</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in payments %}
+                <tr>
+                    <td>{{ p.order_id }}</td>
+                    <td>₱{{ "%.2f"|format(p.amount_paid) }}</td>
+                    <td>{{ p.payment_method }}</td>
+                    <td>{{ p.payment_status }}</td>
+                    <td>{{ p.payment_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,1 +1,130 @@
-{% extends 'base.html' %}{% block content %}<div class="card p-3"><h4>Orders</h4>{% if orders %}<table class="table"><tr><th>ID</th><th>Product</th><th>Vendor</th><th>Buyer</th><th>Qty</th><th>Status</th><th>Date</th><th>Action</th></tr>{% for o in orders %}<tr><td>{{ o.id }}</td><td>{{ o.product_name }}</td><td>{{ o.vendor_name }}</td><td>{{ o.buyer.username if o.buyer else '' }}</td><td>{{ o.quantity }}</td><td>{{ o.status }}</td><td>{{ o.created_at.strftime('%Y-%m-%d %H:%M') }}</td><td>{% if session.get('role') in ['admin','vendor'] %}<form method="POST" action="{{ url_for('update_order', oid=o.id) }}"><select name="status" class="form-select form-select-sm"><option {% if o.status=='Pending' %}selected{% endif %}>Pending</option><option {% if o.status=='Processing' %}selected{% endif %}>Processing</option><option {% if o.status=='Shipped' %}selected{% endif %}>Shipped</option><option {% if o.status=='Delivered' %}selected{% endif %}>Delivered</option><option {% if o.status=='Cancelled' %}selected{% endif %}>Cancelled</option></select><button class="btn btn-sm btn-primary mt-1">Update</button></form>{% endif %}</td></tr>{% endfor %}</table>{% else %}<p>No orders.</p>{% endif %}</div>{% endblock %}
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Toast Notification -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+    {% if session.get('updated') %}
+    <div class="toast align-items-center text-white bg-success border-0 show" role="alert">
+        <div class="d-flex">
+            <div class="toast-body">
+                ✔ Status updated successfully!
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card p-3">
+    <h4>Orders</h4>
+
+    {% if orders %}
+    <table class="table table-bordered align-middle">
+        <tr>
+            <th>ID</th>
+            <th>Product</th>
+            <th>Vendor</th>
+            <th>Buyer</th>
+            <th>Qty</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+
+        {% for o in orders %}
+        <tr>
+            <td>{{ o.id }}</td>
+            <td>{{ o.product_name }}</td>
+            <td>{{ o.vendor_name }}</td>
+            <td>{{ o.buyer.username if o.buyer else '' }}</td>
+            <td>{{ o.quantity }}</td>
+
+            <!-- A. COLORED STATUS BADGES -->
+            <td>
+                {% if o.status == 'Pending' %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                {% elif o.status == 'Processing' %}
+                    <span class="badge bg-primary">Processing</span>
+                {% elif o.status == 'Shipped' %}
+                    <span class="badge bg-purple" style="background:#6f42c1">Shipped</span>
+                {% elif o.status == 'Delivered' %}
+                    <span class="badge bg-success">Delivered</span>
+                {% elif o.status == 'Cancelled' %}
+                    <span class="badge bg-danger">Cancelled</span>
+                {% endif %}
+            </td>
+
+            <td>{{ o.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+
+            <td>
+                {% if session.get('role') in ['admin', 'vendor'] %}
+                    
+                    {% if o.status != 'Delivered' %}
+                        <!-- B. MARK AS DELIVERED BUTTON -->
+                        <form method="POST" action="{{ url_for('update_order', oid=o.id) }}" class="d-inline">
+                            <input type="hidden" name="status" value="Delivered">
+                            <button class="btn btn-success btn-sm">Mark as Delivered</button>
+                        </form>
+
+                        <!-- E. OPEN MODAL BUTTON -->
+                        <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal{{ o.id }}">
+                            Update Status
+                        </button>
+
+                    {% else %}
+                        <!-- C. Disable editing if Delivered -->
+                        <span class="text-muted">No changes allowed</span>
+                    {% endif %}
+
+                {% else %}
+                    <!-- D. Buyers cannot edit -->
+                    <span class="text-muted">View only</span>
+                {% endif %}
+            </td>
+        </tr>
+
+        <!-- Modal (E. Status Update Modal) -->
+        <div class="modal fade" id="modal{{ o.id }}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              
+              <div class="modal-header">
+                <h5 class="modal-title">Update Order #{{ o.id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <form method="POST" action="{{ url_for('update_order', oid=o.id) }}">
+              <div class="modal-body">
+
+                    <label>Status</label>
+                    <select name="status" class="form-select">
+
+                        <option {% if o.status=='Pending' %}selected{% endif %}>Pending</option>
+                        <option {% if o.status=='Processing' %}selected{% endif %}>Processing</option>
+                        <option {% if o.status=='Shipped' %}selected{% endif %}>Shipped</option>
+                        <option {% if o.status=='Delivered' %}selected{% endif %}>Delivered</option>
+                        <option {% if o.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
+
+                    </select>
+
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-primary">Update</button>
+              </div>
+
+              </form>
+
+            </div>
+          </div>
+        </div>
+
+        {% endfor %}
+    </table>
+
+    {% else %}
+    <p>No orders.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

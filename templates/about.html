@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mt-5 pt-4">
+  <h2 class="mb-4 text-center">About Us</h2>
+  <p class="text-center mb-5">
+    Meet the team behind <strong>Marine Marketplace 3.0</strong>.
+  </p>
+
+  <div class="row justify-content-center">
+
+    <div class="col-md-3">
+      <div class="card team-card mb-4 shadow-sm">
+        <img src="{{ url_for('static', filename='team/team1.jpg') }}" class="card-img-top" alt="Janelle">
+        <div class="card-body text-center">
+          <h5 class="fw-bold">Janelle Salva</h5>
+          <p class="small text-muted mb-0">Backend Developer</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card team-card mb-4 shadow-sm">
+        <img src="{{ url_for('static', filename='team/team2.jpg') }}" class="card-img-top" alt="Christopher">
+        <div class="card-body text-center">
+          <h5 class="fw-bold">Christopher Mayores</h5>
+          <p class="small text-muted mb-0">Database Specialist</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card team-card mb-4 shadow-sm">
+        <img src="{{ url_for('static', filename='team/team3.jpg') }}" class="card-img-top" alt="Haide">
+        <div class="card-body text-center">
+          <h5 class="fw-bold">Haide Kiel Leynes</h5>
+          <p class="small text-muted mb-0">UI/UX Designer</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card team-card mb-4 shadow-sm">
+        <img src="{{ url_for('static', filename='team/team4.jpg') }}" class="card-img-top" alt="Ace">
+        <div class="card-body text-center">
+          <h5 class="fw-bold">Ace Santillan</h5>
+          <p class="small text-muted mb-0">Project Manager</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

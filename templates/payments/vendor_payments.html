@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Vendor Payments</h2>
+
+    {% if payments|length == 0 %}
+        <p>No payments found for your products.</p>
+    {% else %}
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Product</th>
+                    <th>Buyer</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in payments %}
+                <tr>
+                    <td>{{ p.order_id }}</td>
+                    <td>{{ p.product_name }}</td>
+                    <td>{{ p.buyer_name }}</td>
+                    <td>{{ p.quantity }}</td>
+                    <td>₱{{ p.subtotal }}</td>
+                    <td>{{ p.payment_method }}</td>
+                    <td>{{ p.payment_status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+
+{% endblock %}

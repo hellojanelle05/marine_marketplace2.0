@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block content %}
+<h3>Payment Success</h3>
+<p>Order ID: <strong>{{ oid }}</strong></p>
+<p>Amount: ₱{{ '{:.2f}'.format(amount) }}</p>
+<a class="btn btn-primary" href="{{ url_for('marketplace') }}">Back to marketplace</a>
+{% endblock %}
