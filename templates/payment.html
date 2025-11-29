@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Order Payment</h3>
+
+<h4>Items:</h4>
+<ul>
+    {% for item in order['items'] %}
+        <li>{{ item['name'] }} — ₱{{ item['price'] }} × {{ item['quantity'] }}</li>
+    {% endfor %}
+</ul>
+
+<h4>Total: ₱{{ total }}</h4>
+
+<form method="POST" action="{{ url_for('process_payment', order_id=order['id']) }}">
+    <label>Payment Method:</label>
+    <select name="payment_method" class="form-control" required>
+        <option value="GCash">GCash</option>
+        <option value="Bank Transfer">Bank Transfer</option>
+        <option value="Cash on Delivery">Cash on Delivery</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary mt-3">Submit Payment</button>
+</form>
+
+{% endblock %}

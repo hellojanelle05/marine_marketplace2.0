@@ -17,7 +17,7 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('APP_SECRET', 'change_this_secret_for_demo')
+app.secret_key = os.environ.get('APP_SECRET', 'bahoNitope')
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR,'marine_marketplace.db')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -360,6 +360,35 @@ def pay(oid):
         flash('Payment recorded','success')
         return redirect(url_for('payment_success', oid=o.id))
     return render_template('payment.html', order=o, total=total)
+
+@app.route('/process_payment/<int:order_id>', methods=['POST'])
+@login_required
+def process_payment(order_id):
+    payment_method = request.form.get('payment_method')
+
+    conn = get_db_connection()
+
+    # Verify order exists and belongs to the user
+    order = conn.execute(
+        "SELECT * FROM orders WHERE id = ? AND customer_id = ?",
+        (order_id, session['user_id'])
+    ).fetchone()
+
+    if not order:
+        conn.close()
+        flash("Order not found.", "danger")
+        return redirect(url_for('orders'))
+
+    # Update payment record
+    conn.execute(
+        "UPDATE orders SET payment_method = ?, payment_status = 'Paid' WHERE id = ?",
+        (payment_method, order_id)
+    )
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('payment_success'))
+
 
 @app.route('/payment_success/<int:oid>')
 @login_required(role='consumer')
